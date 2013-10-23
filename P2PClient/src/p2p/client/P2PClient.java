@@ -1,8 +1,8 @@
 package p2p.client;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -12,7 +12,7 @@ import p2p.client.task.TaskManager;
 
 public class P2PClient implements Runnable {
 
-	public void listen() {
+	private void listen() {
 		ServerSocket ssocket = null;
 		try {
 			ssocket = new ServerSocket(9999);
@@ -23,11 +23,21 @@ public class P2PClient implements Runnable {
 		} catch (Exception e) {
 			Logger.getLogger(P2PClient.class.getName()).log(Level.ALL, null, e);
 		}
-
+	}
+	
+	private void online() {
+		try {
+			Socket socket = new Socket(InetAddress.getLocalHost(),9999);
+			socket.getOutputStream().write(0);
+			socket.close();
+		} catch (Exception e) {
+			Logger.getLogger(P2PClient.class.getName()).log(Level.ALL, null, e);
+		}
 	}
 
 	@Override
 	public void run() {
+		online();
 		listen();
 	}
 
@@ -42,7 +52,7 @@ public class P2PClient implements Runnable {
 				manager.addTask(input,10);
 				manager.dispatch();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Logger.getLogger(P2PClient.class.getName()).log(Level.ALL, null, e);
 		}
 	}

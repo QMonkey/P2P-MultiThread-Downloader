@@ -1,6 +1,5 @@
 package p2p.server;
 
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -21,7 +20,6 @@ public class P2PServer {
 		} catch (Exception e) {
 			Logger.getLogger(P2PServer.class.getName()).log(Level.ALL, null, e);
 		}
-
 	}
 
 	public static void main(String[] args) {
