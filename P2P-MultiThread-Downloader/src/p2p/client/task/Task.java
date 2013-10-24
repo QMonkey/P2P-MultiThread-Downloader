@@ -1,19 +1,22 @@
 package p2p.client.task;
 
 import java.net.URL;
+import java.util.concurrent.Semaphore;
 
 public class Task {
 	private long taskLength;
     private String taskName;
     private URL url;
     private int subTasksCount;
-
 	private TaskFragment[] subTasks;
+	private Semaphore available;
     
     public Task() {
+    	available = new Semaphore(1);
     }
 	
 	public Task(long taskLength, String taskName, URL url, int subTasksCount) {
+		this();
 		this.taskLength = taskLength;
 		this.taskName = taskName;
 		this.url = url;
@@ -23,6 +26,9 @@ public class Task {
 	}
 
 	public void initSubTasks(long taskBegin,long taskEnd) {
+		if(subTasks == null) {
+			subTasks = new TaskFragment[subTasksCount];
+		}
 		for(int i = subTasksCount - 1; i >= 0; --i) {
 			this.subTasks[i] = new TaskFragment();
 		}
@@ -38,6 +44,13 @@ public class Task {
 			subTasks[i].setTaskEnd(subTasksBegin + difference);
 			subTasks[i].setOccupied(false);
 		}
+		for(TaskFragment subTask : subTasks) {
+			System.out.println("begin: " + subTask.getTaskBegin() + "\tend: " + subTask.getTaskEnd());
+		}
+	}
+
+	public Semaphore getAvailable() {
+		return available;
 	}
 
 	public long getTaskLength() {

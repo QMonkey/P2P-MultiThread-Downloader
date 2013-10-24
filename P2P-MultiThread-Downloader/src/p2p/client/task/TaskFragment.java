@@ -16,6 +16,9 @@ public class TaskFragment {
     
     public void promote(long offset) {
     	begin += offset;
+    	if(begin > end) {
+    		begin = end;
+    	}
     }
     
     public long getRemaining() {

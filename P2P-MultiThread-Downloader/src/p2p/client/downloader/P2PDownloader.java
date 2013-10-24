@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import p2p.client.task.Task;
-import p2p.client.task.TaskFragment;
 
 public class P2PDownloader extends Downloader {
 
@@ -15,11 +14,11 @@ public class P2PDownloader extends Downloader {
 
 	@Override
 	public void run() {
-		TaskFragment subTask = null;
+		subTask = null;
 		try {
 			available.acquire();
 		} catch (InterruptedException e) {
-			Logger.getLogger(MultiThreadDownloader.class.getName() + "_ThreadInterrupted").log(Level.ALL,null,e);
+			Logger.getLogger(P2PDownloader.class.getName() + "_ThreadInterrupted").log(Level.ALL,null,e);
 		}
 		subTask = task.getFirstFreeSubTask();
 		if(subTask == null) {
@@ -28,6 +27,7 @@ public class P2PDownloader extends Downloader {
 		}
 		subTask.setOccupied(true);
 		available.release();
+		
 		this.counter.countDown();
 	}
 }

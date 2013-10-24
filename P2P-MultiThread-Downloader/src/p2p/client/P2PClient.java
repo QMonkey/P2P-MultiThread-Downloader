@@ -60,10 +60,9 @@ public class P2PClient implements Runnable {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String input = null;
 		try {
+			TaskManager manager = new TaskManager(5,10);
 			while((input = br.readLine()) != null) {
-				TaskManager manager = new TaskManager(5,10);
 				manager.addTask(input,10);
-				manager.dispatch();
 			}
 		} catch (Exception e) {
 			Logger.getLogger(P2PClient.class.getName()).log(Level.ALL, null, e);

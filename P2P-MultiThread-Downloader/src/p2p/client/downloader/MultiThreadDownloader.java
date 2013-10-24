@@ -12,27 +12,32 @@ import p2p.client.task.TaskFragment;
 
 public class MultiThreadDownloader extends Downloader {
 
-	public MultiThreadDownloader(Task task, Semaphore available) {
-		super(task,available);
+	public MultiThreadDownloader(Task task) {
+		super(task);
 	}
 
 	@Override
 	public void run() {
-		TaskFragment subTask = null;
+		Semaphore available = task.getAvailable();
 		try {
-			this.available.acquire();
+			available.acquire();
 		} catch (InterruptedException e) {
 			Logger.getLogger(MultiThreadDownloader.class.getName() + "_ThreadInterrupted").log(Level.ALL,null,e);
 		}
-		subTask = this.task.getFirstFreeSubTask();
+		TaskFragment subTask = this.task.getFirstFreeSubTask();
 		if(subTask == null) {
-			this.available.release();
+			available.release();
 			return;
 		}
 		subTask.setOccupied(true);
-		this.available.release();
+		if(subTask.isFinished()) {
+			available.release();
+			return;
+		}
+		available.release();
 		
-		long subTaskBegin = subTask.getTaskBegin();
+		System.out.println(Thread.currentThread().getId() + "\t" + subTask.getTaskBegin() + "\t" + subTask.getTaskEnd());
+		
 		try {
 			HttpURLConnection huc = (HttpURLConnection)this.task.getUrl().openConnection();
 			huc.setRequestMethod("GET");
@@ -42,9 +47,9 @@ public class MultiThreadDownloader extends Downloader {
 			RandomAccessFile output = new RandomAccessFile(this.task.getTaskName(),"rw");
 			int rd = 0;
 			byte[] buffer = new byte[bufferLength];
-			output.seek(subTaskBegin);
+			output.seek(subTask.getTaskBegin());
 			
-			while((rd = input.read(buffer)) != -1) {
+			while((rd = input.read(buffer)) > 0) {
 				output.write(buffer,0,rd);
 				subTask.promote(rd);
 			}
@@ -54,6 +59,6 @@ public class MultiThreadDownloader extends Downloader {
 		} catch(Exception e) {
 			Logger.getLogger(MultiThreadDownloader.class.getName()).log(Level.ALL,null,e);
 		}
-		this.counter.countDown();
+		subTask.setOccupied(false);
 	}
 }

@@ -1,27 +1,14 @@
 package p2p.client.downloader;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
-
 import p2p.client.task.Task;
+import p2p.client.task.TaskFragment;
 
 public abstract class Downloader implements Runnable {
 	protected int bufferLength = 4096;
-	protected Semaphore available;
-	protected CountDownLatch counter;
 	protected Task task;
 
-	public Downloader(Task task, Semaphore available) {
+	public Downloader(Task task) {
 		this.task = task;
-		this.available = available;
-	}
-
-	public CountDownLatch getCounter() {
-		return counter;
-	}
-
-	public void setCounter(CountDownLatch counter) {
-		this.counter = counter;
 	}
 
 	public Task getTask() {
