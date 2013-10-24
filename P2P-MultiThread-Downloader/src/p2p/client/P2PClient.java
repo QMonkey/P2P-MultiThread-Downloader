@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import p2p.client.handler.RequestHandler;
+import p2p.client.protocol.P2PProtocolHeader;
 import p2p.client.task.TaskManager;
 
 public class P2PClient implements Runnable {
@@ -18,7 +20,7 @@ public class P2PClient implements Runnable {
 			ssocket = new ServerSocket(9999);
 			while(true) {
 				Socket socket = ssocket.accept();
-				//new Thread(new TaskChooser(socket)).start();
+				new Thread(new RequestHandler(socket)).start();
 			}
 		} catch (Exception e) {
 			Logger.getLogger(P2PClient.class.getName()).log(Level.ALL, null, e);
@@ -27,8 +29,18 @@ public class P2PClient implements Runnable {
 	
 	private void online() {
 		try {
-			Socket socket = new Socket(InetAddress.getLocalHost(),9999);
-			socket.getOutputStream().write(0);
+			Socket socket = new Socket(InetAddress.getLocalHost(),10000);
+			socket.getOutputStream().write(P2PProtocolHeader.ONLINE.getValue());
+			socket.close();
+		} catch (Exception e) {
+			Logger.getLogger(P2PClient.class.getName()).log(Level.ALL, null, e);
+		}
+	}
+	
+	private void outline() {
+		try {
+			Socket socket = new Socket(InetAddress.getLocalHost(),10000);
+			socket.getOutputStream().write(P2PProtocolHeader.OUTLINE.getValue());
 			socket.close();
 		} catch (Exception e) {
 			Logger.getLogger(P2PClient.class.getName()).log(Level.ALL, null, e);
@@ -39,6 +51,7 @@ public class P2PClient implements Runnable {
 	public void run() {
 		online();
 		listen();
+		outline();
 	}
 
 	public static void main(String[] args) {

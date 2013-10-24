@@ -1,29 +1,43 @@
 package p2p.server.handler;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class RequestHandler implements Runnable {
-	private Socket client;
+import p2p.client.protocol.P2PProtocolHeader;
 
-	public RequestHandler(Socket socket) {
-		this.client = socket;
+public class RequestHandler implements Runnable {
+	private Socket socket;
+	private LinkedList<String> iptable;
+
+	public RequestHandler(Socket socket,LinkedList<String> iptable) {
+		this.socket = socket;
+		this.iptable = iptable;
 	}
 
 	@Override
 	public void run() {
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			String input = br.readLine();
-			System.out.println(input);
-			PrintWriter pw = new PrintWriter(client.getOutputStream());
-			pw.write("Hello world!");
-			pw.flush();
-			client.close();
+			InputStream ins = socket.getInputStream();
+			OutputStream outs = socket.getOutputStream();
+
+			switch(P2PProtocolHeader.values()[ins.read()]) {
+			case ONLINE:
+				IPTableManager.add(iptable,socket.getInetAddress().toString());
+				break;
+			case OUTLINE:
+				IPTableManager.del(iptable, socket.getInetAddress().toString());
+				break;
+			case SEARCH_RESOURCE:
+				ResourceSeacher.search(ins, outs, iptable, socket.getInetAddress().toString());
+				break;
+			default:
+				break;
+			}
+			socket.close();
 		} catch (Exception e) {
 			Logger.getLogger(RequestHandler.class.getName()).log(Level.ALL, null, e);
 		}
