@@ -1,7 +1,6 @@
 package p2p.client.downloader;
 
 import p2p.client.task.Task;
-import p2p.client.task.TaskFragment;
 
 public abstract class Downloader implements Runnable {
 	protected int bufferLength = 4096;

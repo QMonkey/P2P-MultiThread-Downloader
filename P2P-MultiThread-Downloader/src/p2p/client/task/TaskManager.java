@@ -9,12 +9,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TaskManager implements Runnable {
+
 	private Task task;
 	private TaskDispatcher dispatcher;
 	
 	public TaskManager(int coreThreadPoolSize, int maxThreadPoolSize) {
 		BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
 		dispatcher = new TaskDispatcher(coreThreadPoolSize, maxThreadPoolSize,queue);
+	}
+	
+	public Task getTask() {
+		return task;
 	}
 	
 	public void addTask(String urlString, int subTasksCount) {
@@ -42,7 +47,7 @@ public class TaskManager implements Runnable {
 			long fileSize = huc.getContentLengthLong();
 			task.setTaskLength(fileSize);
 			task.initSubTasks(0, fileSize);
-			System.out.println(task.getSubTasksCount() + "\t" + task.getTaskLength() + "\t" + task.getTaskName());
+			System.out.println("TaskName: " + task.getTaskName() + "\tTaskSize: " + task.getTaskLength());
 			dispatcher.dispatch(task);
 		} catch (Exception e) {
 			Logger.getLogger(TaskManager.class.getName()).log(Level.SEVERE, null, e);

@@ -2,7 +2,6 @@ package p2p.client;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -11,13 +10,14 @@ import java.util.logging.Logger;
 import p2p.client.handler.RequestHandler;
 import p2p.client.protocol.P2PProtocolHeader;
 import p2p.client.task.TaskManager;
+import p2p.utils.Configurator;
 
 public class P2PClient implements Runnable {
 
 	private void listen() {
 		ServerSocket ssocket = null;
 		try {
-			ssocket = new ServerSocket(9999);
+			ssocket = new ServerSocket(Integer.valueOf(Configurator.getPort()));
 			while(true) {
 				Socket socket = ssocket.accept();
 				new Thread(new RequestHandler(socket)).start();
@@ -29,7 +29,8 @@ public class P2PClient implements Runnable {
 	
 	private void online() {
 		try {
-			Socket socket = new Socket(InetAddress.getLocalHost(),10000);
+			Socket socket = new Socket(Configurator.getServerHost(),
+					Integer.valueOf(Configurator.getServerPort()));
 			socket.getOutputStream().write(P2PProtocolHeader.ONLINE.getValue());
 			socket.close();
 		} catch (Exception e) {
@@ -39,7 +40,8 @@ public class P2PClient implements Runnable {
 	
 	private void outline() {
 		try {
-			Socket socket = new Socket(InetAddress.getLocalHost(),10000);
+			Socket socket = new Socket(Configurator.getServerHost(),//InetAddress.getLocalHost(),
+					Integer.valueOf(Configurator.getServerPort()));
 			socket.getOutputStream().write(P2PProtocolHeader.OUTLINE.getValue());
 			socket.close();
 		} catch (Exception e) {
@@ -55,14 +57,17 @@ public class P2PClient implements Runnable {
 	}
 
 	public static void main(String[] args) {
+		Configurator.init();
 		P2PClient client = new P2PClient();
 		new Thread(client).start();
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String input = null;
 		try {
-			TaskManager manager = new TaskManager(5,10);
+			TaskManager manager = new TaskManager(Integer.valueOf(Configurator.getCoreThreadPoolSize()),
+					Integer.valueOf(Configurator.getMaxThreadPoolSize()));
+			int subTaskSize = Integer.valueOf(Configurator.getSubTaskSize());
 			while((input = br.readLine()) != null) {
-				manager.addTask(input,10);
+				manager.addTask(input,subTaskSize);
 			}
 		} catch (Exception e) {
 			Logger.getLogger(P2PClient.class.getName()).log(Level.ALL, null, e);

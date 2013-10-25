@@ -44,9 +44,6 @@ public class Task {
 			subTasks[i].setTaskEnd(subTasksBegin + difference);
 			subTasks[i].setOccupied(false);
 		}
-		for(TaskFragment subTask : subTasks) {
-			System.out.println("begin: " + subTask.getTaskBegin() + "\tend: " + subTask.getTaskEnd());
-		}
 	}
 
 	public Semaphore getAvailable() {

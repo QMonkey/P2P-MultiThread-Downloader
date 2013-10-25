@@ -36,8 +36,6 @@ public class MultiThreadDownloader extends Downloader {
 		}
 		available.release();
 		
-		System.out.println(Thread.currentThread().getId() + "\t" + subTask.getTaskBegin() + "\t" + subTask.getTaskEnd());
-		
 		try {
 			HttpURLConnection huc = (HttpURLConnection)this.task.getUrl().openConnection();
 			huc.setRequestMethod("GET");
