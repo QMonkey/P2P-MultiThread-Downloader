@@ -52,7 +52,7 @@ public class StructTask {
 		this.downloaded = downloaded;
 		this.elapseTime = elapseTime;
 		this.remainTime = remainTime;
-		component.update(this);
+		//component.update(this);
 	}
 
 	public float getRate(){

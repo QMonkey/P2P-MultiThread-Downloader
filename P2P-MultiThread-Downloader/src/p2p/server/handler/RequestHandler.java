@@ -1,7 +1,6 @@
 package p2p.server.handler;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -22,7 +21,6 @@ public class RequestHandler implements Runnable {
 	public void run() {
 		try {
 			InputStream ins = socket.getInputStream();
-			OutputStream outs = socket.getOutputStream();
 
 			switch(P2PProtocolHeader.values()[ins.read()]) {
 			case ONLINE:
@@ -31,8 +29,14 @@ public class RequestHandler implements Runnable {
 			case OUTLINE:
 				IPTableManager.del(iptable, socket.getInetAddress().toString());
 				break;
-			case SEARCH_RESOURCE:
-				ResourceSeacher.search(ins, outs, iptable, socket.getInetAddress().toString());
+			case UPLOAD_RESOURCE_INFO:
+				//TODO
+				break;
+			case REQUEST_IP:
+				//TODO
+				break;
+			case REQUEST_RESOURCE:
+				//TODO
 				break;
 			default:
 				break;

@@ -5,6 +5,7 @@ import java.util.concurrent.Semaphore;
 
 public class Task {
 	private long taskLength;
+	private long startTime;
     private String taskName;
     private URL url;
     private int subTasksCount;
@@ -17,6 +18,7 @@ public class Task {
 	
 	public Task(long taskLength, String taskName, URL url, int subTasksCount) {
 		this();
+		this.startTime = System.currentTimeMillis();
 		this.taskLength = taskLength;
 		this.taskName = taskName;
 		this.url = url;
@@ -48,6 +50,10 @@ public class Task {
 
 	public Semaphore getAvailable() {
 		return available;
+	}
+	
+	public long getStartTime() {
+		return this.startTime;
 	}
 
 	public long getTaskLength() {
@@ -105,6 +111,9 @@ public class Task {
 	
 	public int getProgress() {
 		long remaining = 0;
+		if(subTasks == null) {
+			return 0;
+		}
 		for(TaskFragment subTask : subTasks) {
 			remaining += subTask.getRemaining();
 		}

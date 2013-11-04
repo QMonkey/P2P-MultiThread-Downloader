@@ -51,6 +51,6 @@ public class TaskManager implements Runnable {
 			dispatcher.dispatch(task);
 		} catch (Exception e) {
 			Logger.getLogger(TaskManager.class.getName()).log(Level.SEVERE, null, e);
-		}   
+		}
 	}
 }

@@ -2,6 +2,7 @@ package p2p.client;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -22,6 +23,7 @@ public class P2PClient implements Runnable {
 				Socket socket = ssocket.accept();
 				new Thread(new RequestHandler(socket)).start();
 			}
+			//ssocket.close();
 		} catch (Exception e) {
 			Logger.getLogger(P2PClient.class.getName()).log(Level.ALL, null, e);
 		}
@@ -29,8 +31,9 @@ public class P2PClient implements Runnable {
 	
 	private void online() {
 		try {
-			Socket socket = new Socket(Configurator.getServerHost(),
-					Integer.valueOf(Configurator.getServerPort()));
+			Socket socket = new Socket();
+			socket.connect(new InetSocketAddress(Configurator.getServerHost(),
+					Integer.valueOf(Configurator.getServerPort())), 10000);
 			socket.getOutputStream().write(P2PProtocolHeader.ONLINE.getValue());
 			socket.close();
 		} catch (Exception e) {
@@ -40,8 +43,9 @@ public class P2PClient implements Runnable {
 	
 	private void outline() {
 		try {
-			Socket socket = new Socket(Configurator.getServerHost(),//InetAddress.getLocalHost(),
-					Integer.valueOf(Configurator.getServerPort()));
+			Socket socket = new Socket();
+			socket.connect(new InetSocketAddress(Configurator.getServerHost(),
+					Integer.valueOf(Configurator.getServerPort())), 10000);
 			socket.getOutputStream().write(P2PProtocolHeader.OUTLINE.getValue());
 			socket.close();
 		} catch (Exception e) {

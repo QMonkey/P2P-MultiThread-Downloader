@@ -8,15 +8,17 @@ import p2p.utils.Configurator;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.util.*;
-import java.util.Timer;
 /**
  * @author JING
  * 
  * 主面板
  */
-public class FrameMain extends JFrame implements ActionListener{
+public class FrameMain extends JFrame implements ActionListener,Runnable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JToolBar toolBar;
 	private JButton buttonCreate;
 	private JButton buttonContinue;
@@ -31,25 +33,22 @@ public class FrameMain extends JFrame implements ActionListener{
 	private Vector<ComponentTask> taskComponents;
 
 	private int size = Constant.componentSize;
-	
+
 	private TaskManager taskManager;
 
 	public FrameMain(){
 		initComponent();
 	}
-	
 
 	public TaskManager getTaskManager() {
 		return taskManager;
 	}
 
-
 	public void setTaskManager(TaskManager taskManager) {
 		this.taskManager = taskManager;
 	}
 
-
-	private void initComponent(){
+	private void initComponent() {
 		setTitle(Constant.titleMain);
 		setVisible(true);
 		setResizable(false);
@@ -112,20 +111,20 @@ public class FrameMain extends JFrame implements ActionListener{
 		taskComponents = new Vector<ComponentTask>();
 	}
 
-	public void addTask(){
-		if(taskComponents.size() >= size){
+	public void addTask() {
+		if(taskComponents.size() >= size) {
 			size += Constant.componentDelta;
 			panelTaskContainer.removeAll();
 			panelTaskContainer.validate();
 			panelTaskContainer.setLayout(new GridLayout(size, 1, 0, Constant.spacingComponent));
 			for(int i = 0; i < taskComponents.size(); i++)
 				panelTaskContainer.add(taskComponents.get(i));
-			ComponentTask componentTask = new ComponentTask(SingletonFactory.generateQueueStructTask().lastElement());
+			ComponentTask componentTask = new ComponentTask();
 			taskComponents.add(componentTask);
 			validate();
 			return;
 		}
-		ComponentTask componentTask = new ComponentTask(SingletonFactory.generateQueueStructTask().lastElement());
+		ComponentTask componentTask = new ComponentTask();
 		panelTaskContainer.add(componentTask);
 		taskComponents.add(componentTask);
 		validate();
@@ -135,28 +134,25 @@ public class FrameMain extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		Object action = e.getSource();
 		//		工具按钮事件处理
-		if(action == buttonCreate){
+		if(action == buttonCreate) {
 			FrameCreate frame = (FrameCreate)SingletonFactory.generateFrame(Constant.ID.CREATE);
 			frame.relocate();
 			frame.setVisible(true);
-			new Timer().schedule(new ComponentTaskUpdater(taskManager.getTask(),taskComponents), 0, 500);
-		}
-		else if(action == buttonContinue){
+			new Thread(this).start();
+		} else if(action == buttonContinue) {
 			//			任务继续
 			//			UI更新仿照删除操作写法
 			//			TODO
-		}
-		else if(action == buttonPause){
+		} else if(action == buttonPause) {
 			//			任务暂停
 			//			UI更新仿照删除操作写法
 			//			TODO
-		}
-		else if(action == buttonDelete){
+		} else if(action == buttonDelete) {
 			Iterator<ComponentTask> iter = taskComponents.iterator();
 			int i = 0;
-			while(iter.hasNext()){
+			while(iter.hasNext()) {
 				ComponentTask component = iter.next();
-				if(component.isSelected()){
+				if(component.isSelected()) {
 					//					从备份UI队列里删除一个
 					taskComponents.remove(component);
 					iter = taskComponents.iterator();
@@ -170,11 +166,34 @@ public class FrameMain extends JFrame implements ActionListener{
 					validate();
 				}
 			}
-		}
-		else if(action == buttonConfig){
+		} else if(action == buttonConfig) {
 			FrameConfig frame = (FrameConfig)SingletonFactory.generateFrame(Constant.ID.CONFIG);
 			frame.relocate();
 			frame.setVisible(true);
+		}
+	}
+	
+	@Override
+	public void run() {
+		while(true) {
+			Task task = taskManager.getTask();
+			if(task != null) {
+				Iterator<ComponentTask> components = taskComponents.iterator();
+				while(components.hasNext()) {
+					taskComponents.firstElement().setTask(task,task.getProgress(),500);
+					taskComponents.firstElement().update(task);
+					//TODO MultiTask
+					//components.next().update(task);
+				}
+				System.out.println("Hello");
+			} else {
+				System.out.println("Nice to meet you!");
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -190,25 +209,4 @@ public class FrameMain extends JFrame implements ActionListener{
 				Integer.valueOf(Configurator.getMaxThreadPoolSize()));
 		frameMain.setTaskManager(manager);
 	}
-}
-
-
-final class ComponentTaskUpdater extends TimerTask {
-	private Task task;
-	private Vector<ComponentTask> taskComponents;
-	
-	public ComponentTaskUpdater(Task task,Vector<ComponentTask> taskComponents) {
-		super();
-		this.task = task;
-		this.taskComponents = taskComponents;
-	}
-
-	@Override
-	public void run() {
-		StructTask structTask = SingletonFactory.generateQueueStructTask().firstElement();
-		structTask.update(0, task.getProgress(), 0, 0);
-		taskComponents.firstElement().update(structTask);
-		this.cancel();
-	}
-
 }

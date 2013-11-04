@@ -11,20 +11,20 @@ public class SingletonFactory {
 //	多任务结构队列
 	private static Vector<StructTask> queueStructTask = null;
 	
-	public static JFrame generateFrame(Constant.ID id){
-		switch(id){
+	public static JFrame generateFrame(Constant.ID id) {
+		switch(id) {
 			case MAIN:
-				if(frameMain == null){
+				if(frameMain == null) {
 					frameMain = new FrameMain();
 				}
 				return frameMain;
 			case CREATE:
-				if(frameCreate == null && frameMain != null){
+				if(frameCreate == null && frameMain != null) {
 					frameCreate = new FrameCreate(frameMain);
 				}
 				return frameCreate;
 			case CONFIG:
-				if(frameConfig == null  && frameMain != null){
+				if(frameConfig == null  && frameMain != null) {
 					frameConfig = new FrameConfig(frameMain);
 				}
 				return frameConfig;
@@ -33,7 +33,7 @@ public class SingletonFactory {
 		}
 	}
 	
-	public static Vector<StructTask> generateQueueStructTask(){
+	public static Vector<StructTask> generateQueueStructTask() {
 		if(queueStructTask == null)
 			queueStructTask = new Vector<StructTask>();
 		return queueStructTask;
