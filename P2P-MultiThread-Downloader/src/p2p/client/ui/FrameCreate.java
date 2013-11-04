@@ -3,7 +3,6 @@ import javax.swing.*;
 
 import p2p.client.task.Task;
 import p2p.client.task.TaskManager;
-import p2p.client.ui.Constant.ID;
 import p2p.utils.Configurator;
 
 import java.awt.*;
@@ -100,11 +99,11 @@ public class FrameCreate extends JFrame implements ActionListener{
 			Task task = manager.getTask();
 			filename = task.getTaskName();
 			size = (float) (1.0 * task.getTaskLength() / 1024 / 1024);
-			
+			/*
 			StructTask structTask = new StructTask(host, port, link, filename, size);
 			//			加入容器，下载开始时不断更新元素的内容，用于重绘UI
 			SingletonFactory.generateQueueStructTask().add(structTask);
-			
+			*/
 			((FrameMain)(SingletonFactory.generateFrame(Constant.ID.MAIN))).addTask();
 			setVisible(false);
 		}

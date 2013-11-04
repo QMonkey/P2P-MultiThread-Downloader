@@ -3,5 +3,5 @@ port=9999
 serverHost=127.0.0.1
 serverPort=10000
 subTaskSize=10
-coreThreadPoolSize=5
-maxThreadPoolSize=10
+coreThreadPoolSize=10
+maxThreadPoolSize=20

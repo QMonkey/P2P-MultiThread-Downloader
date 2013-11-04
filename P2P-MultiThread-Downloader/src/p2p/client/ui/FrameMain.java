@@ -1,5 +1,4 @@
 package p2p.client.ui;
-import javax.swing.*;
 
 import p2p.client.task.Task;
 import p2p.client.task.TaskManager;
@@ -7,6 +6,9 @@ import p2p.client.ui.environment.UIEnvironment;
 import p2p.utils.Configurator;
 
 import java.awt.*;
+
+import javax.swing.*;
+
 import java.awt.event.*;
 import java.util.*;
 /**
@@ -149,7 +151,6 @@ public class FrameMain extends JFrame implements ActionListener,Runnable {
 			//			TODO
 		} else if(action == buttonDelete) {
 			Iterator<ComponentTask> iter = taskComponents.iterator();
-			int i = 0;
 			while(iter.hasNext()) {
 				ComponentTask component = iter.next();
 				if(component.isSelected()) {
@@ -160,7 +161,7 @@ public class FrameMain extends JFrame implements ActionListener,Runnable {
 					panelTaskContainer.remove(component);
 					panelTaskContainer.validate();
 					//					从任务结构队列里删除一个
-					SingletonFactory.generateQueueStructTask().remove(i++);
+					//SingletonFactory.generateQueueStructTask().remove(i++);
 					//					从线程队列里删除一个
 					//					TODO
 					validate();
@@ -180,17 +181,15 @@ public class FrameMain extends JFrame implements ActionListener,Runnable {
 			if(task != null) {
 				Iterator<ComponentTask> components = taskComponents.iterator();
 				while(components.hasNext()) {
-					taskComponents.firstElement().setTask(task,task.getProgress(),500);
+					taskComponents.firstElement().setTask(task,task.getFinishTaskSize(),2000);
 					taskComponents.firstElement().update(task);
 					//TODO MultiTask
 					//components.next().update(task);
 				}
 				System.out.println("Hello");
-			} else {
-				System.out.println("Nice to meet you!");
 			}
 			try {
-				Thread.sleep(500);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

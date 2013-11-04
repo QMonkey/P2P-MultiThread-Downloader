@@ -15,7 +15,7 @@ public class Task {
     public Task() {
     	available = new Semaphore(1);
     }
-	
+	/*
 	public Task(long taskLength, String taskName, URL url, int subTasksCount) {
 		this();
 		this.startTime = System.currentTimeMillis();
@@ -26,8 +26,10 @@ public class Task {
 		this.subTasks = new TaskFragment[subTasksCount];
 		initSubTasks(0,taskLength);
 	}
+	*/
 
 	public void initSubTasks(long taskBegin,long taskEnd) {
+		this.startTime = System.currentTimeMillis();
 		if(subTasks == null) {
 			subTasks = new TaskFragment[subTasksCount];
 		}
@@ -109,14 +111,30 @@ public class Task {
 		return number;
 	}
 	
-	public int getProgress() {
+	public long getRemaining() {
 		long remaining = 0;
 		if(subTasks == null) {
 			return 0;
 		}
 		for(TaskFragment subTask : subTasks) {
-			remaining += subTask.getRemaining();
+			if(subTask != null) {
+				remaining += subTask.getRemaining();
+			}
 		}
-		return (int) ((taskLength - remaining) * 100 / taskLength);
+		return remaining;
+	}
+	
+	public long getFinishTaskSize() {
+		if(subTasks == null) {
+			return 0;
+		}
+		return taskLength - this.getRemaining();
+	}
+	
+	public int getProgress() {
+		if(subTasks == null) {
+			return 0;
+		}
+		return (int) (getFinishTaskSize() * 100 / taskLength);
 	}
 }
